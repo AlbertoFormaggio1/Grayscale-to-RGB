@@ -1,0 +1,3 @@
+[submodule "dimensionality_reduction_functions"]
+	path = dimensionality_reduction_functions
+	url = https://github.com/areslp/matlab.git
