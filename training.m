@@ -13,17 +13,12 @@ imP = imageDatastore(pathP, ...
 %[imdsTrain,imdsTest] = splitEachLabel(imP,0.8,'randomized'); %split test and training set
 imP = shuffle(imP)
 
-%sarebbe da andare a dividere (secondo la teoria, magari c'è una funzione
-%che lo fa da sola) il train in 4 parti uguali. A turno, ciascuna di queste
-%verrà utilizzata come validation mentre le altre 3 come training. Bisogna
-%capire come dire alla rete di fare questo, ovvero come capire di cambiare.
-
 net = alexnet;  %load AlexNet
 siz=[227 227];
 
 %######Dividing into k folds#########
 
-k=4;
+k=4; %Modify k if you want the dataset to be split in different number of folds.
 partStores{k} = [];
 for i = 1:k
     temp = partition(imP,k,i);
@@ -35,9 +30,10 @@ netTransfer{k} = [];
 
 
 final_pred = categorical([]);
-%###########tuning rete############
+%###########tuning network############
 for i = 1:4
 
+    %Getting training and validation set for iteration i
     test_idx = (idx == i);
     train_idx = ~test_idx;
 
@@ -81,7 +77,7 @@ for i = 1:4
     valid_accuracy(i) = mean(YPred == YTest);
     confusionchart(YTest,YPred);
     
-    pred = cat(2, test_store.Files, YPred, YTest);   % NOME FILE   PREDICTION  LABEL
+    pred = cat(2, test_store.Files, YPred, YTest);   % FILENAME  PREDICTION  LABEL
     
     %SCORES FOLD1
     %SCORES FOLD2
@@ -90,7 +86,8 @@ for i = 1:4
     
 end
 
-filename = [pathP '.xlsx'];  %Quando alleni per la seconda volta fai [pathP '2' '.xlsx']
+%Exporting data to excel file
+filename = [pathP '.xlsx'];
 writematrix(final_pred, filename);
 
 avg_valid_accuracy = mean(valid_accuracy);
